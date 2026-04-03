@@ -1,0 +1,6 @@
+node_modules/
+.next/
+.env.local
+prisma/adaptive-market.db
+*.db
+.turso/

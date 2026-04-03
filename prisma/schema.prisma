@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Ticker {
+  id        Int      @id @default(autoincrement())
+  symbol    String   @unique
+  name      String
+  exchange  String?
+  sector    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ohlcvSnapshots        OHLCVSnapshot[]
+  taSnapshots           TASnapshot[]
+  aiReports             AIReport[]
+  fundamentalSnapshots  FundamentalSnapshot[]
+  valuationReports      ValuationReport[]
+
+  @@index([symbol])
+}
+
+model OHLCVSnapshot {
+  id         Int      @id @default(autoincrement())
+  tickerId   Int
+  ticker     Ticker   @relation(fields: [tickerId], references: [id])
+  period     String
+  capturedAt DateTime @default(now())
+  barsJson   String
+
+  @@index([tickerId, period, capturedAt])
+}
+
+model TASnapshot {
+  id         Int      @id @default(autoincrement())
+  tickerId   Int
+  ticker     Ticker   @relation(fields: [tickerId], references: [id])
+  capturedAt DateTime @default(now())
+  period     String
+
+  currentPrice   Float
+  priceChange    Float
+  priceChangePct Float
+
+  sma20   Float?
+  sma50   Float?
+  sma200  Float?
+  ema12   Float?
+  ema26   Float?
+
+  rsi14   Float?
+  stochK  Float?
+  stochD  Float?
+  adx14   Float?
+  diPlus  Float?
+  diMinus Float?
+
+  macdLine   Float?
+  macdSignal Float?
+  macdHist   Float?
+
+  bbUpper  Float?
+  bbMiddle Float?
+  bbLower  Float?
+  bbWidth  Float?
+  atr14    Float?
+
+  obv         Float?
+  volumeSMA20 Float?
+  volumeRatio Float?
+
+  supportLevels    String?
+  resistanceLevels String?
+  overallSignal    String?
+  signalScore      Int?
+
+  @@index([tickerId, period, capturedAt])
+}
+
+model AIReport {
+  id          Int      @id @default(autoincrement())
+  tickerId    Int
+  ticker      Ticker   @relation(fields: [tickerId], references: [id])
+  generatedAt DateTime @default(now())
+  period      String
+  taInputJson String
+  reportText  String
+  tokensUsed  Int?
+  modelUsed   String   @default("claude-sonnet-4-6")
+  likes       Int      @default(0)
+  comments    ReportComment[]
+
+  @@index([tickerId, generatedAt])
+}
+
+model ReportComment {
+  id        Int      @id @default(autoincrement())
+  reportId  Int
+  report    AIReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([reportId, createdAt])
+}
+
+model SearchLog {
+  id         Int      @id @default(autoincrement())
+  symbol     String
+  searchType String   // 'ta' | 'valuation' | 'report'
+  searchedAt DateTime @default(now())
+  price      Float?
+  result     String   @default("success") // 'success' | 'error'
+  errorMsg   String?
+
+  @@index([symbol, searchedAt])
+  @@index([searchedAt])
+}
+
+model FundamentalSnapshot {
+  id         Int      @id @default(autoincrement())
+  tickerId   Int
+  ticker     Ticker   @relation(fields: [tickerId], references: [id])
+  capturedAt DateTime @default(now())
+
+  // Income statement (in millions)
+  revenue         Float?
+  ebit            Float?
+  interestExpense Float?
+  netIncome       Float?
+  taxRate         Float?
+
+  // Balance sheet (in millions)
+  bookEquity         Float?
+  bookDebt           Float?
+  cash               Float?
+  nonOperatingAssets Float?
+  minorityInterests  Float?
+
+  // Market / derived
+  sharesOutstanding Float?
+  beta              Float?
+  revenueGrowthYoy  Float?
+  operatingMargin   Float?
+
+  // Metadata
+  sector   String?
+  industry String?
+  rawJson  String?
+
+  @@index([tickerId, capturedAt])
+}
+
+model ValuationReport {
+  id          Int      @id @default(autoincrement())
+  tickerId    Int
+  ticker      Ticker   @relation(fields: [tickerId], references: [id])
+  generatedAt DateTime @default(now())
+
+  // Inputs & results stored as JSON
+  inputsJson  String
+  resultsJson String
+
+  // AI report text (null for auto-saved DCF snapshots without AI text)
+  reportText String?
+
+  // Key display fields (denormalised for list view)
+  intrinsicValue Float
+  currentPrice   Float
+  marginOfSafety Float
+
+  modelUsed String @default("claude-sonnet-4-6")
+  likes     Int    @default(0)
+
+  @@index([tickerId, generatedAt])
+}
