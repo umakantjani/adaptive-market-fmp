@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Bookmark, TrendingUp, TrendingDown, Sparkles, Calculator, Target } from 'lucide-react'
+import { ArrowLeft, Bookmark, TrendingUp, TrendingDown, Sparkles, Calculator, Target, ChartArea } from 'lucide-react'
 import { MenuButton } from '@/components/Sidebar'
 import IndicatorGrid from '@/components/IndicatorGrid'
 import PriceChart from '@/components/charts/PriceChart'
@@ -132,6 +132,17 @@ export default function TickerPage() {
               color: '#FF6D00',
             }}>
             <Target size={14} /> Sniper
+          </button>
+          <button onClick={() => router.push(`/ticker/${symbol}/marketcap`)} className="md-ripple"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '6px 12px', borderRadius: 6,
+              background: 'var(--md-surface-container)',
+              border: 'none', cursor: 'pointer',
+              fontSize: 13, fontWeight: 500,
+              color: '#FFD740',
+            }}>
+            <ChartArea size={14} /> Mkt Cap
           </button>
           <button onClick={() => router.push('/reports')} className="md-ripple"
             style={{ padding: 10, borderRadius: 50, background: 'transparent', border: 'none', cursor: 'pointer' }}>
