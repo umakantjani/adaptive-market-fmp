@@ -3,6 +3,88 @@ import type { TAResult, TickerInfo } from '@/types/market'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
+export function buildReportPromptV2(ticker: TickerInfo, ta: Omit<TAResult, 'history'> & { history?: TAResult['history'] }): string {
+  const fmt = (v: number | null | undefined, dec = 2) => (v !== null && v !== undefined ? v.toFixed(dec) : 'N/A')
+
+  const obvDirection =
+    ta.volumeRatio !== null
+      ? ta.volumeRatio > 1.2 ? 'Rising (above-average volume accumulation)'
+      : ta.volumeRatio < 0.8 ? 'Falling (below-average volume, distribution risk)'
+      : 'Neutral (in-line with 20-day average)'
+      : 'N/A'
+
+  const resistance = ta.resistanceLevels.slice(0, 2)
+  const support = ta.supportLevels.slice(0, 2)
+  const r1 = resistance[0] ? `$${resistance[0].price.toFixed(2)} (strength ${resistance[0].strength}/5)` : 'N/A'
+  const r2 = resistance[1] ? `$${resistance[1].price.toFixed(2)} (strength ${resistance[1].strength}/5)` : 'N/A'
+  const s1 = support[0] ? `$${support[0].price.toFixed(2)} (strength ${support[0].strength}/5)` : 'N/A'
+  const s2 = support[1] ? `$${support[1].price.toFixed(2)} (strength ${support[1].strength}/5)` : 'N/A'
+
+  return `Here is the current technical snapshot for ${ticker.symbol} (${ticker.name}):
+
+### MARKET DATA
+- Current Price: $${fmt(ticker.currentPrice)}
+- 52-Week Range: $${fmt(ticker.week52Low)} - $${fmt(ticker.week52High)}
+- Volume Ratio (vs 20d SMA): ${fmt(ta.volumeRatio)}x
+- OBV Trend: ${obvDirection}
+
+### TREND & REGIME
+- SMA 20: $${fmt(ta.sma20)} | SMA 50: $${fmt(ta.sma50)} | SMA 200: $${fmt(ta.sma200)}
+- ADX (14): ${fmt(ta.adx14, 1)} | +DI: ${fmt(ta.diPlus, 1)} | -DI: ${fmt(ta.diMinus, 1)}
+- MACD Line: ${fmt(ta.macdLine, 4)} | Signal: ${fmt(ta.macdSignal, 4)} | Histogram: ${fmt(ta.macdHist, 4)}
+
+### MOMENTUM & VOLATILITY
+- RSI (14): ${fmt(ta.rsi14, 1)}
+- ATR (14): $${fmt(ta.atr14)}
+- Bollinger Bands: Upper $${fmt(ta.bbUpper)} | Middle $${fmt(ta.bbMiddle)} | Lower $${fmt(ta.bbLower)}
+- BB Width: ${fmt(ta.bbWidth, 1)}%
+
+### IDENTIFIED ZONES
+- Resistance Levels: ${r1}, ${r2}
+- Support Levels: ${s1}, ${s2}
+
+---
+REQUIREMENTS FOR THE REPORT:
+
+1. Tone & Style: Objective, clinical, and precise. Use institutional terminology (e.g., "accumulation," "distribution," "volatility compression," "mean reversion," "secular trend"). Avoid hyperbole (do not use words like "skyrocket" or "plummet").
+2. No Hallucinations: Base all analysis STRICTLY on the data provided above.
+
+STRUCTURE THE REPORT EXACTLY AS FOLLOWS:
+
+## 1. Executive Summary (BLUF)
+Provide a 2-3 sentence "Bottom Line Up Front" summarizing the primary trend, current momentum, and the immediate actionable bias (Long, Short, or Neutral/Wait).
+
+## 2. Market Structure & Trend Dynamics
+Analyze the alignment of the moving averages and ADX. Is the asset trending or range-bound? Who is in control of the tape? Note any proximity to the 200-day SMA.
+
+## 3. Momentum & Volume Profile
+Synthesize RSI, MACD, and Volume/OBV. Is momentum diverging from price? Does the volume profile validate the current price action, or does it suggest low-conviction/retail-driven movement?
+
+## 4. Volatility & Risk Parameters
+Analyze the Bollinger Bands and ATR. Is volatility expanding or contracting? Based on the ATR of $${fmt(ta.atr14)}, what is the expected daily noise, and where should structural stops be placed to avoid premature stop-outs?
+
+## 5. Trading Scenarios & Actionable Levels
+Map out the exact parameters for trading this asset right now. Provide specific price levels.
+* Base Case Scenario: The most probable path forward over the next 1-3 weeks.
+* Bull Trigger (Long Setup): The exact resistance level that, if broken with volume, triggers a long entry. Include the primary price target and the invalidation (stop-loss) level based on ATR.
+* Bear Trigger (Short/Hedging Setup): The exact support level that, if lost on volume, triggers a short/hedge. Include downside targets and invalidation levels.
+
+Format the output in clean Markdown. Be concise.`
+}
+
+export async function generateReportStreamV2(ticker: TickerInfo, ta: Omit<TAResult, 'history'> & { history?: TAResult['history'] }) {
+  const prompt = buildReportPromptV2(ticker, ta)
+
+  return anthropic.messages.stream({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 3000,
+    system: `You are a Lead Technical Analyst at a top-tier institutional equity research desk. Your objective is to synthesize the provided market data and technical indicators into a precise, highly actionable, and objective technical analysis report.
+
+Your audience consists of portfolio managers and institutional traders. Do not explain what the indicators are (they already know); instead, interpret what the confluence of these indicators means for price action, liquidity, and risk.`,
+    messages: [{ role: 'user', content: prompt }],
+  })
+}
+
 export function buildReportPrompt(ticker: TickerInfo, ta: Omit<TAResult, 'history'> & { history?: TAResult['history'] }, period: string): string {
   const fmt = (v: number | null | undefined, dec = 2) => (v !== null && v !== undefined ? v.toFixed(dec) : 'N/A')
   const fmtPct = (v: number | null) => (v !== null ? v.toFixed(2) + '%' : 'N/A')

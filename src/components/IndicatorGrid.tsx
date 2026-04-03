@@ -68,7 +68,7 @@ export default function IndicatorGrid({ ta, ticker }: Props) {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
         {items.map((item) => (
           <button
             key={item.label}
@@ -76,30 +76,34 @@ export default function IndicatorGrid({ ta, ticker }: Props) {
             className="md-ripple"
             style={{
               textAlign: 'left',
-              padding: '16px',
-              borderRadius: 20,
+              padding: '10px 12px',
+              borderRadius: 8,
               background: 'var(--md-surface-container)',
-              border: 'none',
+              border: '1px solid var(--md-outline-variant)',
               cursor: hasModal(item.label) ? 'pointer' : 'default',
             }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-              <p style={{ fontSize: 12, color: 'var(--md-on-surface-variant)', margin: 0, fontWeight: 400 }}>{item.label}</p>
+            {/* Label + value inline */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <p style={{ fontSize: 11, color: 'var(--md-on-surface-variant)', margin: 0, fontWeight: 400 }}>{item.label}</p>
               {hasModal(item.label) && (
-                <ChevronRight size={12} color="var(--md-outline)" style={{ flexShrink: 0 }} />
+                <ChevronRight size={11} color="var(--md-outline)" style={{ flexShrink: 0 }} />
               )}
             </div>
-            <p className="num" style={{ fontSize: 15, fontWeight: 600, color: 'var(--md-on-surface)', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+            <p className="num" style={{ fontSize: 14, fontWeight: 600, color: 'var(--md-on-surface)', margin: '3px 0 0', fontVariantNumeric: 'tabular-nums' }}>
               {item.displayValue}
             </p>
-            {item.signal && (
-              <span style={{
-                display: 'inline-block', marginTop: 8,
-                fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 12,
-                color: item.signalColor, background: `${item.signalColor}20`,
-              }}>{item.signal}</span>
-            )}
-            {item.subvalue && (
-              <p style={{ fontSize: 11, color: 'var(--md-outline)', margin: '6px 0 0' }}>{item.subvalue}</p>
+            {/* Signal + subvalue row */}
+            {(item.signal || item.subvalue) && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
+                {item.signal && (
+                  <span className="t-badge" style={{ color: item.signalColor, background: `${item.signalColor}20` }}>
+                    {item.signal}
+                  </span>
+                )}
+                {item.subvalue && (
+                  <span style={{ fontSize: 10, color: 'var(--md-outline)', marginLeft: 'auto' }}>{item.subvalue}</span>
+                )}
+              </div>
             )}
           </button>
         ))}

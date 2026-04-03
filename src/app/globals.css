@@ -2,44 +2,164 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MD3 CSS Custom Properties */
-:root {
-  --md-background: #0F0F13;
-  --md-surface: #1C1B1F;
-  --md-surface-container-low: #1E1B21;
-  --md-surface-container: #222029;
-  --md-surface-container-high: #2B2930;
-  --md-surface-container-highest: #36343B;
-  --md-primary: #7CB9F4;
-  --md-on-primary: #003258;
-  --md-primary-container: #004A7C;
-  --md-on-primary-container: #D1E4FF;
-  --md-on-background: #E6E1E5;
-  --md-on-surface: #E6E1E5;
-  --md-on-surface-variant: #CAC4D0;
-  --md-outline: #938F99;
-  --md-outline-variant: rgba(147,143,153,0.15);
-  --md-buy: #69F0AE;
-  --md-sell: #CF6679;
-  --md-neutral: #FFD740;
+/* ── Fonts ────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('/fonts/ApercuPro-Light.otf') format('opentype');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('/fonts/ApercuPro-Regular.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('/fonts/ApercuPro-Medium.otf') format('opentype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('/fonts/ApercuPro-Bold.otf') format('opentype');
+  font-weight: 700; font-style: normal; font-display: swap;
 }
 
+@font-face {
+  font-family: 'Apercu Mono Pro';
+  src: url('/fonts/ApercuMonoPro-Regular.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Mono Pro';
+  src: url('/fonts/ApercuMonoPro-Medium.otf') format('opentype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Mono Pro';
+  src: url('/fonts/ApercuMonoPro-Bold.otf') format('opentype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* Apercu Mono Pro — numeric characters only (for inline use in prose) */
+@font-face {
+  font-family: 'Apercu Mono Pro Numeric';
+  src: url('/fonts/ApercuMonoPro-Regular.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+  unicode-range: U+0030-0039, U+0024, U+0025, U+002B, U+002C, U+002D, U+002E, U+002F, U+003A, U+00B0, U+00D7;
+}
+@font-face {
+  font-family: 'Apercu Mono Pro Numeric';
+  src: url('/fonts/ApercuMonoPro-Medium.otf') format('opentype');
+  font-weight: 500; font-style: normal; font-display: swap;
+  unicode-range: U+0030-0039, U+0024, U+0025, U+002B, U+002C, U+002D, U+002E, U+002F, U+003A, U+00B0, U+00D7;
+}
+@font-face {
+  font-family: 'Apercu Mono Pro Numeric';
+  src: url('/fonts/ApercuMonoPro-Bold.otf') format('opentype');
+  font-weight: 700; font-style: normal; font-display: swap;
+  unicode-range: U+0030-0039, U+0024, U+0025, U+002B, U+002C, U+002D, U+002E, U+002F, U+003A, U+00B0, U+00D7;
+}
+
+/* Galaxie Copernicus — serif for reports & rituals */
+@font-face {
+  font-family: 'Galaxie Copernicus';
+  src: url('/fonts/GalaxieCopernicus-Book.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Galaxie Copernicus';
+  src: url('/fonts/GalaxieCopernicus-BookItalic.otf') format('opentype');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Galaxie Copernicus';
+  src: url('/fonts/GalaxieCopernicus-Medium.otf') format('opentype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Galaxie Copernicus';
+  src: url('/fonts/GalaxieCopernicus-Semibold.otf') format('opentype');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Galaxie Copernicus';
+  src: url('/fonts/GalaxieCopernicus-Bold.otf') format('opentype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* Gotham SSM — for all headings */
+@font-face {
+  font-family: 'Gotham SSM';
+  src: url('/fonts/GothamSSM-Light.otf') format('opentype');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gotham SSM';
+  src: url('/fonts/GothamSSM-Medium.otf') format('opentype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gotham SSM';
+  src: url('/fonts/GothamSSM-Bold.otf') format('opentype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gotham SSM';
+  src: url('/fonts/GothamSSM-Black.otf') format('opentype');
+  font-weight: 900; font-style: normal; font-display: swap;
+}
+
+/* ── Color Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds — deep terminal blacks */
+  --md-background:                #0C0C11;
+  --md-surface:                   #111118;
+  --md-surface-container-low:     #14141D;
+  --md-surface-container:         #1A1A25;
+  --md-surface-container-high:    #20202E;
+  --md-surface-container-highest: #272738;
+
+  /* Primary accent — cool terminal blue */
+  --md-primary:                   #4DBBFF;
+  --md-on-primary:                #001E30;
+  --md-primary-container:         #003452;
+  --md-on-primary-container:      #B8E4FF;
+
+  /* Text */
+  --md-on-background:             #DCDCE8;
+  --md-on-surface:                #DCDCE8;
+  --md-on-surface-variant:        #787896;
+  --md-outline:                   #3A3A52;
+  --md-outline-variant:           rgba(58,58,82,0.55);
+
+  /* Signal colors */
+  --md-buy:    #00E676;
+  --md-sell:   #FF4D6A;
+  --md-neutral: #FFB300;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
 
 body {
   background: var(--md-background);
   color: var(--md-on-background);
-  font-family: -apple-system, "Roboto", "Segoe UI", sans-serif;
+  font-family: 'Apercu Pro', -apple-system, 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
 }
 
-/* Scrollbar */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Gotham SSM', 'Apercu Pro', sans-serif;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--md-outline-variant); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--md-outline); border-radius: 2px; }
 
-/* MD3 State Layer */
+/* ── Hover state layer ────────────────────────────────────────────────────── */
 .md-ripple { position: relative; overflow: hidden; }
 .md-ripple::after {
   content: '';
@@ -47,25 +167,79 @@ body {
   inset: 0;
   background: var(--md-on-surface);
   opacity: 0;
-  transition: opacity 150ms ease;
+  transition: opacity 120ms ease;
   border-radius: inherit;
 }
-.md-ripple:hover::after { opacity: 0.08; }
-.md-ripple:active::after { opacity: 0.12; }
+.md-ripple:hover::after { opacity: 0.05; }
+.md-ripple:active::after { opacity: 0.1; }
 
-/* AI Report Prose */
-.report-prose { font-size: 14px; line-height: 1.7; color: var(--md-on-surface-variant); }
-.report-prose h2 { color: var(--md-on-surface); font-size: 16px; font-weight: 600; margin-top: 24px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--md-outline-variant); }
-.report-prose h3 { color: var(--md-on-surface); font-size: 14px; font-weight: 600; margin-top: 16px; margin-bottom: 6px; }
-.report-prose p { margin-bottom: 12px; }
+/* ── Terminal card ────────────────────────────────────────────────────────── */
+.t-card {
+  background: var(--md-surface-container);
+  border-radius: 10px;
+  border: 1px solid var(--md-outline-variant);
+}
+
+/* ── Terminal badge ───────────────────────────────────────────────────────── */
+.t-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Sidebar layout ───────────────────────────────────────────────────────── */
+:root { --sidebar-w: 200px; }
+.has-sidebar { margin-left: 0; transition: margin-left 220ms ease; }
+@media (min-width: 768px) {
+  .has-sidebar { margin-left: var(--sidebar-w); }
+}
+
+/* Mobile sidebar drawer */
+.sidebar-nav { transform: translateX(-100%); transition: transform 220ms ease, width 220ms ease; }
+.sidebar-nav.sidebar-mobile-open { transform: translateX(0); }
+@media (min-width: 768px) {
+  .sidebar-nav { transform: translateX(0) !important; }
+}
+
+/* Desktop-only collapse toggle */
+.collapse-btn { display: none !important; }
+@media (min-width: 768px) { .collapse-btn { display: flex !important; } }
+
+/* Mobile overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 39;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.active { display: block; }
+@media (min-width: 768px) {
+  .sidebar-overlay { display: none !important; }
+}
+
+/* ── AI Report prose ──────────────────────────────────────────────────────── */
+.report-prose { font-size: 15px; line-height: 1.8; color: var(--md-on-surface-variant); font-family: 'Apercu Mono Pro Numeric', 'Galaxie Copernicus', Georgia, serif; }
+.report-prose h2 { font-family: 'Gotham SSM', sans-serif; color: var(--md-on-surface); font-size: 13px; font-weight: 700; margin-top: 24px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--md-outline-variant); text-transform: uppercase; letter-spacing: 0.06em; }
+.report-prose h3 { font-family: 'Gotham SSM', sans-serif; color: var(--md-on-surface); font-size: 12px; font-weight: 500; margin-top: 14px; margin-bottom: 4px; letter-spacing: 0.04em; }
+.report-prose p { margin-bottom: 10px; }
 .report-prose strong { color: var(--md-on-surface); font-weight: 600; }
-.report-prose ul { padding-left: 20px; margin-bottom: 12px; }
-.report-prose ul li { margin-bottom: 4px; }
-.report-prose blockquote { border-left: 3px solid var(--md-primary); padding-left: 16px; margin: 16px 0; font-style: italic; }
-.report-prose table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
-.report-prose th { background: var(--md-surface-container-high); color: var(--md-on-surface); padding: 8px 12px; text-align: left; font-weight: 600; }
-.report-prose td { padding: 8px 12px; border-bottom: 1px solid var(--md-outline-variant); }
-.report-prose code { background: var(--md-surface-container-high); color: var(--md-primary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+.report-prose ul { padding-left: 18px; margin-bottom: 10px; }
+.report-prose ul li { margin-bottom: 3px; }
+.report-prose blockquote { border-left: 2px solid var(--md-primary); padding-left: 14px; margin: 14px 0; font-style: italic; }
+.report-prose table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 14px; }
+.report-prose th { background: var(--md-surface-container-high); color: var(--md-on-surface); padding: 6px 10px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.report-prose td { padding: 7px 10px; border-bottom: 1px solid var(--md-outline-variant); }
+.report-prose code { background: var(--md-surface-container-high); color: var(--md-primary); padding: 1px 5px; border-radius: 3px; font-size: 12px; font-family: 'Apercu Mono Pro', 'JetBrains Mono', monospace; }
 
-/* Number formatting */
-.num { font-variant-numeric: tabular-nums; }
+/* ── Number / mono formatting ─────────────────────────────────────────────── */
+.num {
+  font-family: 'Apercu Mono Pro', 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Skeleton pulse ───────────────────────────────────────────────────────── */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.animate-pulse { animation: pulse 1.5s ease-in-out infinite; }

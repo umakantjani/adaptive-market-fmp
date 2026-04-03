@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Bookmark, TrendingUp, TrendingDown, Sparkles, Calculator, Target } from 'lucide-react'
+import { MenuButton } from '@/components/Sidebar'
 import IndicatorGrid from '@/components/IndicatorGrid'
-import MobileNav from '@/components/MobileNav'
 import PriceChart from '@/components/charts/PriceChart'
 import RSIMACDChart from '@/components/charts/RSIMACDChart'
 import StochADXChart from '@/components/charts/StochADXChart'
@@ -57,25 +57,27 @@ export default function TickerPage() {
 
   const cardStyle = {
     background: 'var(--md-surface-container)',
-    borderRadius: 28,
-    padding: 20,
+    borderRadius: 10,
+    border: '1px solid var(--md-outline-variant)',
+    padding: 16,
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 80 }}
-      className="md:pb-0">
+    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 0 }}
+     >
 
-      {/* Top App Bar */}
-      <header style={{
+      {/* Top App Bar — mobile only */}
+      <header className="md:hidden" style={{
         position: 'sticky', top: 0, zIndex: 30,
-        height: 64, padding: '0 8px 0 4px',
+        height: 52, padding: '0 8px 0 4px',
         display: 'flex', alignItems: 'center', gap: 4,
         background: 'var(--md-surface)',
         borderBottom: '1px solid var(--md-outline-variant)',
       }}>
+        <MenuButton />
         <button onClick={() => router.push('/')} className="md-ripple"
-          style={{ padding: 12, borderRadius: 50, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-          <ArrowLeft size={22} color="var(--md-on-surface-variant)" />
+          style={{ padding: 8, borderRadius: 6, background: 'transparent', border: 'none', cursor: 'pointer' }}>
+          <ArrowLeft size={20} color="var(--md-on-surface-variant)" />
         </button>
 
         <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', gap: 10, paddingLeft: 4 }}>
@@ -93,14 +95,15 @@ export default function TickerPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {sc && (
             <span style={{
-              fontSize: 12, fontWeight: 600, padding: '5px 12px', borderRadius: 16,
+              fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
               color: sc.color, background: sc.bg,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
             }}>{sc.label}</span>
           )}
           <button onClick={() => router.push(`/ticker/${symbol}/report`)} className="md-ripple"
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '8px 14px', borderRadius: 20,
+              padding: '6px 12px', borderRadius: 6,
               background: 'var(--md-surface-container)',
               border: 'none', cursor: 'pointer',
               fontSize: 13, fontWeight: 500,
@@ -111,7 +114,7 @@ export default function TickerPage() {
           <button onClick={() => router.push(`/ticker/${symbol}/valuation`)} className="md-ripple"
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '8px 14px', borderRadius: 20,
+              padding: '6px 12px', borderRadius: 6,
               background: 'var(--md-surface-container)',
               border: 'none', cursor: 'pointer',
               fontSize: 13, fontWeight: 500,
@@ -122,7 +125,7 @@ export default function TickerPage() {
           <button onClick={() => router.push(`/ticker/${symbol}/sniper`)} className="md-ripple"
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '8px 14px', borderRadius: 20,
+              padding: '6px 12px', borderRadius: 6,
               background: 'var(--md-surface-container)',
               border: 'none', cursor: 'pointer',
               fontSize: 13, fontWeight: 500,
@@ -139,7 +142,7 @@ export default function TickerPage() {
 
       {/* Error */}
       {error && (
-        <div style={{ margin: '16px', padding: '16px 20px', borderRadius: 16, background: 'rgba(239,83,80,0.1)', color: '#EF5350', fontSize: 14 }}>
+        <div style={{ margin: '16px', padding: '12px 16px', borderRadius: 8, background: 'rgba(239,83,80,0.1)', color: '#EF5350', fontSize: 14 }}>
           {error}
         </div>
       )}
@@ -149,7 +152,7 @@ export default function TickerPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '16px' }}>
           {[120, 360, 280].map((h, i) => (
             <div key={i} className="animate-pulse"
-              style={{ height: h, borderRadius: 28, background: 'var(--md-surface-container)', marginBottom: 16 }} />
+              style={{ height: h, borderRadius: 10, background: 'var(--md-surface-container)', marginBottom: 12 }} />
           ))}
         </div>
       )}
@@ -157,8 +160,8 @@ export default function TickerPage() {
       {data && (
         <main style={{ maxWidth: 1280, margin: '0 auto', padding: '16px' }}>
           <style>{`
-            .ticker-layout { display: grid; gap: 16px; }
-            @media (min-width: 1024px) { .ticker-layout { grid-template-columns: 1fr 380px; } }
+            .ticker-layout { display: grid; gap: 12px; }
+            @media (min-width: 1024px) { .ticker-layout { grid-template-columns: 1fr 360px; } }
             .left-col { display: flex; flex-direction: column; gap: 16px; }
             .right-col { display: flex; flex-direction: column; gap: 16px; }
           `}</style>
@@ -219,9 +222,10 @@ export default function TickerPage() {
                   {chartTabs.map(t => (
                     <button key={t.key} onClick={() => setChartTab(t.key)} className="md-ripple"
                       style={{
-                        flex: 1, padding: '8px 4px', borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                        background: chartTab === t.key ? 'rgba(124,185,244,0.16)' : 'transparent',
+                        flex: 1, padding: '7px 4px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                        background: chartTab === t.key ? 'rgba(77,187,255,0.12)' : 'transparent',
                         color: chartTab === t.key ? 'var(--md-primary)' : 'var(--md-on-surface-variant)',
+                        letterSpacing: '0.02em',
                       }}>
                       {t.label}
                     </button>
@@ -303,7 +307,6 @@ export default function TickerPage() {
         </main>
       )}
 
-      <MobileNav active="indicators" symbol={symbol} />
     </div>
   )
 }

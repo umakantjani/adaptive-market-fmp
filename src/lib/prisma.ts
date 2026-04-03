@@ -1,15 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
-import path from 'node:path'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 function createPrismaClient() {
-  // Production: use Turso via env vars
-  // Development: use local SQLite file
-  const url = process.env.TURSO_DATABASE_URL
-    ?? `file:${path.resolve(process.cwd(), 'prisma', 'adaptive-market.db')}`
-  const authToken = process.env.TURSO_AUTH_TOKEN
-
-  const adapter = new PrismaLibSql({ url, authToken })
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],

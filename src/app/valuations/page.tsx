@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, TrendingUp, TrendingDown, Calculator } from 'lucide-react'
+import { TrendingUp, TrendingDown, Calculator } from 'lucide-react'
+import { MenuButton } from '@/components/Sidebar'
 
 interface ValuationItem {
   id: number
@@ -28,24 +29,21 @@ export default function ValuationsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--md-background)' }}>
-      <header style={{
+      <header className="md:hidden" style={{
         position: 'sticky', top: 0, zIndex: 30,
-        height: 64, padding: '0 8px 0 4px',
+        height: 52, padding: '0 8px 0 4px',
         display: 'flex', alignItems: 'center', gap: 8,
         background: 'var(--md-surface)',
         borderBottom: '1px solid var(--md-outline-variant)',
       }}>
-        <button onClick={() => router.push('/')} className="md-ripple"
-          style={{ padding: 12, borderRadius: 50, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-          <ArrowLeft size={22} color="var(--md-on-surface-variant)" />
-        </button>
+        <MenuButton />
         <h1 style={{ fontSize: 18, fontWeight: 500, color: 'var(--md-on-surface)', margin: 0 }}>Valuations</h1>
       </header>
 
       <main style={{ maxWidth: 720, margin: '0 auto', padding: '24px 16px' }}>
         {loading && Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="animate-pulse"
-            style={{ height: 120, borderRadius: 20, background: 'var(--md-surface-container)', marginBottom: 12 }} />
+            style={{ height: 100, borderRadius: 10, background: 'var(--md-surface-container)', marginBottom: 12 }} />
         ))}
 
         {!loading && valuations.length === 0 && (
@@ -73,8 +71,8 @@ export default function ValuationsPage() {
               style={{
                 width: '100%', textAlign: 'left',
                 background: 'var(--md-surface-container)',
-                borderRadius: 20, padding: 20, marginBottom: 12,
-                border: 'none', cursor: 'pointer', display: 'block',
+                borderRadius: 10, padding: 16, marginBottom: 10,
+                border: '1px solid var(--md-outline-variant)', cursor: 'pointer', display: 'block',
               }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>

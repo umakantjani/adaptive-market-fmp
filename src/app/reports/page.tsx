@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { ArrowLeft, Heart, MessageCircle, TrendingUp, TrendingDown, Calculator, BarChart2 } from 'lucide-react'
-import MobileNav from '@/components/MobileNav'
+import { MenuButton } from '@/components/Sidebar'
 
 type Tab = 'ta' | 'valuation'
 
@@ -54,20 +54,17 @@ function ReportsPageInner() {
   const loading = tab === 'ta' ? loadingTA : loadingVal
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 80 }}
-      className="md:pb-0">
-      {/* Top App Bar */}
-      <header style={{
+    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 0 }}
+     >
+      {/* Top App Bar — mobile only */}
+      <header className="md:hidden" style={{
         position: 'sticky', top: 0, zIndex: 30,
         background: 'var(--md-surface)',
         borderBottom: '1px solid var(--md-outline-variant)',
       }}>
-        <div style={{ height: 64, padding: '0 16px 0 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={() => router.push('/')} className="md-ripple"
-            style={{ padding: 12, borderRadius: 50, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-            <ArrowLeft size={22} color="var(--md-on-surface-variant)" />
-          </button>
-          <h1 style={{ fontSize: 18, fontWeight: 500, color: 'var(--md-on-surface)', margin: 0, flex: 1 }}>Research</h1>
+        <div style={{ height: 52, padding: '0 16px 0 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <MenuButton />
+          <h1 style={{ fontSize: 16, fontWeight: 600, color: 'var(--md-on-surface)', margin: 0, flex: 1 }}>Research</h1>
         </div>
 
         {/* Sub-tabs */}
@@ -113,12 +110,12 @@ function ReportsPageInner() {
         </div>
       </header>
 
-      <main style={{ maxWidth: 720, margin: '0 auto', padding: '24px 16px' }}>
+      <main style={{ maxWidth: 720, margin: '0 auto', padding: '20px 16px' }}>
 
         {/* Loading skeletons */}
         {loading && Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="animate-pulse"
-            style={{ height: 120, borderRadius: 24, background: 'var(--md-surface-container)', marginBottom: 12 }} />
+            style={{ height: 100, borderRadius: 10, background: 'var(--md-surface-container)', marginBottom: 10 }} />
         ))}
 
         {/* ── TA Reports ──────────────────────────────────────────────────── */}
@@ -139,8 +136,8 @@ function ReportsPageInner() {
                 style={{
                   width: '100%', textAlign: 'left',
                   background: 'var(--md-surface-container)',
-                  borderRadius: 24, padding: 20, marginBottom: 12,
-                  border: 'none', cursor: 'pointer', display: 'block',
+                  borderRadius: 10, padding: 16, marginBottom: 10,
+                  border: '1px solid var(--md-outline-variant)', cursor: 'pointer', display: 'block',
                 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -199,8 +196,8 @@ function ReportsPageInner() {
                   style={{
                     width: '100%', textAlign: 'left',
                     background: 'var(--md-surface-container)',
-                    borderRadius: 24, padding: 20, marginBottom: 12,
-                    border: 'none', cursor: 'pointer', display: 'block',
+                    borderRadius: 10, padding: 16, marginBottom: 10,
+                    border: '1px solid var(--md-outline-variant)', cursor: 'pointer', display: 'block',
                   }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -248,7 +245,6 @@ function ReportsPageInner() {
           </>
         )}
       </main>
-      <MobileNav active={tab === 'valuation' ? 'valuation' : 'reports'} />
     </div>
   )
 }

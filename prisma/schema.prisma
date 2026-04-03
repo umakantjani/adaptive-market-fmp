@@ -3,37 +3,169 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
+// ── Ticker registry ───────────────────────────────────────────────────────────
 model Ticker {
   id        Int      @id @default(autoincrement())
   symbol    String   @unique
   name      String
   exchange  String?
   sector    String?
+  industry  String?
+  fullyIngested Boolean @default(false)  // true once all FMP history fetched
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ohlcvSnapshots        OHLCVSnapshot[]
-  taSnapshots           TASnapshot[]
-  aiReports             AIReport[]
-  fundamentalSnapshots  FundamentalSnapshot[]
-  valuationReports      ValuationReport[]
+  taSnapshots          TASnapshot[]
+  aiReports            AIReport[]
+  valuationReports     ValuationReport[]
 
   @@index([symbol])
 }
 
-model OHLCVSnapshot {
-  id         Int      @id @default(autoincrement())
-  tickerId   Int
-  ticker     Ticker   @relation(fields: [tickerId], references: [id])
-  period     String
-  capturedAt DateTime @default(now())
-  barsJson   String
+// ── Raw market data (keyed by symbol+date, no FK — supports S&P 500 bulk load) ─
 
-  @@index([tickerId, period, capturedAt])
+model OHLCVBar {
+  id     Int    @id @default(autoincrement())
+  symbol String
+  date   String // YYYY-MM-DD
+  open   Float
+  high   Float
+  low    Float
+  close  Float
+  volume BigInt
+
+  @@unique([symbol, date])
+  @@index([symbol, date])
 }
+
+model MarketCapHistory {
+  id        Int    @id @default(autoincrement())
+  symbol    String
+  date      String // YYYY-MM-DD
+  marketCap BigInt
+
+  @@unique([symbol, date])
+  @@index([symbol])
+  @@index([date])
+}
+
+// ── Financial statements ──────────────────────────────────────────────────────
+
+model IncomeStatement {
+  id                              Int    @id @default(autoincrement())
+  symbol                          String
+  date                            String // fiscal year-end date
+  period                          String // 'annual' | 'quarterly'
+  fiscalYear                      String?
+  reportedCurrency                String?
+  revenue                         BigInt?
+  costOfRevenue                   BigInt?
+  grossProfit                     BigInt?
+  operatingExpenses               BigInt?
+  operatingIncome                 BigInt?
+  interestExpense                 BigInt?
+  interestIncome                  BigInt?
+  ebitda                          BigInt?
+  ebit                            BigInt?
+  incomeBeforeTax                 BigInt?
+  incomeTaxExpense                BigInt?
+  netIncome                       BigInt?
+  eps                             Float?
+  epsDiluted                      Float?
+  weightedAverageShsOut           BigInt?
+  weightedAverageShsOutDil        BigInt?
+
+  @@unique([symbol, date, period])
+  @@index([symbol, period, date])
+}
+
+model BalanceSheet {
+  id                          Int    @id @default(autoincrement())
+  symbol                      String
+  date                        String
+  period                      String
+  fiscalYear                  String?
+  reportedCurrency            String?
+  cashAndCashEquivalents      BigInt?
+  shortTermInvestments        BigInt?
+  netReceivables              BigInt?
+  inventory                   BigInt?
+  totalCurrentAssets          BigInt?
+  totalAssets                 BigInt?
+  totalCurrentLiabilities     BigInt?
+  longTermDebt                BigInt?
+  totalDebt                   BigInt?
+  totalLiabilities            BigInt?
+  totalStockholdersEquity     BigInt?
+  minorityInterest            BigInt?
+  totalEquity                 BigInt?
+  shortTermInvestmentsProp    BigInt?  // shortTermInvestments for NOA calc
+  longTermInvestments         BigInt?
+
+  @@unique([symbol, date, period])
+  @@index([symbol, period, date])
+}
+
+model CashFlowStatement {
+  id                              Int    @id @default(autoincrement())
+  symbol                          String
+  date                            String
+  period                          String
+  fiscalYear                      String?
+  reportedCurrency                String?
+  netIncome                       BigInt?
+  depreciationAndAmortization     BigInt?
+  operatingCashFlow               BigInt?
+  capitalExpenditure              BigInt?
+  freeCashFlow                    BigInt?
+  dividendsPaid                   BigInt?
+  commonStockRepurchased          BigInt?
+  netCashProvidedByFinancing      BigInt?
+  netChangeInCash                 BigInt?
+
+  @@unique([symbol, date, period])
+  @@index([symbol, period, date])
+}
+
+// ── Company profile ───────────────────────────────────────────────────────────
+
+model CompanyProfile {
+  symbol          String  @id
+  name            String
+  exchange        String?
+  sector          String?
+  industry        String?
+  beta            Float?
+  marketCap       BigInt?
+  price           Float?
+  website         String?
+  description     String?
+  ceo             String?
+  country         String?
+  fullTimeEmployees String?
+  ipoDate         String?
+  isEtf           Boolean @default(false)
+  fetchedAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ── S&P 500 constituents ──────────────────────────────────────────────────────
+
+model Sp500Constituent {
+  symbol          String  @id
+  name            String
+  sector          String?
+  subSector       String?
+  headQuarter     String?
+  dateFirstAdded  String?
+  founded         String?
+  updatedAt       DateTime @updatedAt
+}
+
+// ── App state (TA, AI reports, valuations) ────────────────────────────────────
 
 model TASnapshot {
   id         Int      @id @default(autoincrement())
@@ -107,67 +239,16 @@ model ReportComment {
   @@index([reportId, createdAt])
 }
 
-model SearchLog {
-  id         Int      @id @default(autoincrement())
-  symbol     String
-  searchType String   // 'ta' | 'valuation' | 'report'
-  searchedAt DateTime @default(now())
-  price      Float?
-  result     String   @default("success") // 'success' | 'error'
-  errorMsg   String?
-
-  @@index([symbol, searchedAt])
-  @@index([searchedAt])
-}
-
-model FundamentalSnapshot {
-  id         Int      @id @default(autoincrement())
-  tickerId   Int
-  ticker     Ticker   @relation(fields: [tickerId], references: [id])
-  capturedAt DateTime @default(now())
-
-  // Income statement (in millions)
-  revenue         Float?
-  ebit            Float?
-  interestExpense Float?
-  netIncome       Float?
-  taxRate         Float?
-
-  // Balance sheet (in millions)
-  bookEquity         Float?
-  bookDebt           Float?
-  cash               Float?
-  nonOperatingAssets Float?
-  minorityInterests  Float?
-
-  // Market / derived
-  sharesOutstanding Float?
-  beta              Float?
-  revenueGrowthYoy  Float?
-  operatingMargin   Float?
-
-  // Metadata
-  sector   String?
-  industry String?
-  rawJson  String?
-
-  @@index([tickerId, capturedAt])
-}
-
 model ValuationReport {
   id          Int      @id @default(autoincrement())
   tickerId    Int
   ticker      Ticker   @relation(fields: [tickerId], references: [id])
   generatedAt DateTime @default(now())
 
-  // Inputs & results stored as JSON
   inputsJson  String
   resultsJson String
+  reportText  String?
 
-  // AI report text (null for auto-saved DCF snapshots without AI text)
-  reportText String?
-
-  // Key display fields (denormalised for list view)
   intrinsicValue Float
   currentPrice   Float
   marginOfSafety Float
@@ -176,4 +257,71 @@ model ValuationReport {
   likes     Int    @default(0)
 
   @@index([tickerId, generatedAt])
+}
+
+model SearchLog {
+  id         Int      @id @default(autoincrement())
+  symbol     String
+  searchType String
+  searchedAt DateTime @default(now())
+  price      Float?
+  result     String   @default("success")
+  errorMsg   String?
+
+  @@index([symbol, searchedAt])
+  @@index([searchedAt])
+}
+
+// ── Scanner ───────────────────────────────────────────────────────────────────
+
+model WatchlistTicker {
+  id      Int      @id @default(autoincrement())
+  symbol  String   @unique
+  name    String   @default("")
+  sector  String?
+  addedAt DateTime @default(now())
+  active  Boolean  @default(true)
+
+  scanResults ScanResult[]
+
+  @@index([symbol])
+}
+
+model ScanResult {
+  id     Int      @id @default(autoincrement())
+  symbol String
+  name   String   @default("")
+
+  scannedAt      DateTime @default(now())
+  price          Float
+  priceChangePct Float
+
+  overallSignal String
+  signalScore   Int
+
+  sniperGrade String
+  sniperScore Int
+
+  rsi14       Float?
+  macdHist    Float?
+  bbWidth     Float?
+  adx14       Float?
+  volumeRatio Float?
+  atr14       Float?
+
+  sma20   Float?
+  sma50   Float?
+  sma200  Float?
+
+  aboveSma20  Boolean @default(false)
+  aboveSma50  Boolean @default(false)
+  aboveSma200 Boolean @default(false)
+  macdBullish Boolean @default(false)
+
+  watchlistTicker WatchlistTicker @relation(fields: [symbol], references: [symbol])
+
+  @@index([symbol, scannedAt])
+  @@index([scannedAt])
+  @@index([overallSignal])
+  @@index([sniperGrade])
 }

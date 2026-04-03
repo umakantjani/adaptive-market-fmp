@@ -53,10 +53,11 @@ export default function SearchBar() {
       {/* MD3 Search Bar */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        padding: '0 20px',
-        height: 56,
-        borderRadius: 28,
-        background: 'var(--md-surface-container-high)',
+        padding: '0 14px',
+        height: 42,
+        borderRadius: 8,
+        background: 'var(--md-surface-container)',
+        border: '1px solid var(--md-outline-variant)',
       }}>
         <Search size={20} color="var(--md-on-surface-variant)" style={{ flexShrink: 0 }} />
         <input
@@ -86,8 +87,9 @@ export default function SearchBar() {
       {open && results.length > 0 && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-          background: 'var(--md-surface-container-high)',
-          borderRadius: 16, overflow: 'hidden',
+          background: 'var(--md-surface-container)',
+          border: '1px solid var(--md-outline-variant)',
+          borderRadius: 8, overflow: 'hidden',
           boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
           zIndex: 50,
         }}>

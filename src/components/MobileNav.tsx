@@ -53,6 +53,7 @@ export default function MobileNav({ active, symbol }: Props) {
         paddingBottom: 'env(safe-area-inset-bottom)',
         zIndex: 40,
         display: 'flex',
+        backdropFilter: 'blur(12px)',
       }}>
       {tabs.map(({ key, icon: Icon, label, activeColor }) => {
         const isActive = active === key

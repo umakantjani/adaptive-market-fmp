@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, BarChart2, Calculator, FileText, AlertCircle, TrendingUp } from 'lucide-react'
+import { BarChart2, Calculator, FileText, AlertCircle, TrendingUp } from 'lucide-react'
+import { MenuButton } from '@/components/Sidebar'
 
 interface LogEntry {
   id: number
@@ -46,17 +47,14 @@ export default function LogsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--md-background)' }}>
-      {/* Header */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 30, height: 64,
+      {/* Header — mobile only */}
+      <header className="md:hidden" style={{
+        position: 'sticky', top: 0, zIndex: 30, height: 52,
         padding: '0 16px 0 4px', display: 'flex', alignItems: 'center', gap: 8,
         background: 'var(--md-surface)', borderBottom: '1px solid var(--md-outline-variant)',
       }}>
-        <button onClick={() => router.push('/')} className="md-ripple"
-          style={{ padding: 12, borderRadius: 50, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-          <ArrowLeft size={22} color="var(--md-on-surface-variant)" />
-        </button>
-        <h1 style={{ fontSize: 18, fontWeight: 500, color: 'var(--md-on-surface)', margin: 0, flex: 1 }}>Search Logs</h1>
+        <MenuButton />
+        <h1 style={{ fontSize: 16, fontWeight: 600, color: 'var(--md-on-surface)', margin: 0, flex: 1 }}>Search Logs</h1>
         <span className="num" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
           {totalSearches.toLocaleString()} total
         </span>
@@ -71,7 +69,7 @@ export default function LogsPage() {
             { key: 'valuation', label: 'DCF Valuations', icon: Calculator, color: '#69F0AE' },
             { key: 'report',    label: 'AI Reports',     icon: FileText,   color: '#FFD740' },
           ].map(({ key, label, icon: Icon, color }) => (
-            <div key={key} style={{ background: 'var(--md-surface-container)', borderRadius: 16, padding: '16px 20px' }}>
+            <div key={key} style={{ background: 'var(--md-surface-container)', borderRadius: 10, border: '1px solid var(--md-outline-variant)', padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <Icon size={16} color={color} />
                 <span style={{ fontSize: 12, color: 'var(--md-on-surface-variant)' }}>{label}</span>
@@ -84,7 +82,7 @@ export default function LogsPage() {
 
           {/* Top symbol */}
           {topSymbols[0] && (
-            <div style={{ background: 'var(--md-surface-container)', borderRadius: 16, padding: '16px 20px' }}>
+            <div style={{ background: 'var(--md-surface-container)', borderRadius: 10, border: '1px solid var(--md-outline-variant)', padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <TrendingUp size={16} color="var(--md-primary)" />
                 <span style={{ fontSize: 12, color: 'var(--md-on-surface-variant)' }}>Most Searched</span>
@@ -101,13 +99,13 @@ export default function LogsPage() {
 
         {/* Top symbols bar */}
         {topSymbols.length > 1 && (
-          <div style={{ background: 'var(--md-surface-container)', borderRadius: 16, padding: '14px 20px', marginBottom: 16 }}>
+          <div style={{ background: 'var(--md-surface-container)', border: '1px solid var(--md-outline-variant)', borderRadius: 10, padding: '12px 16px', marginBottom: 14 }}>
             <p style={{ fontSize: 12, color: 'var(--md-on-surface-variant)', margin: '0 0 10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Top Symbols</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {topSymbols.map(s => (
                 <button key={s.symbol} onClick={() => router.push(`/ticker/${s.symbol}`)}
                   className="md-ripple"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 12, background: 'var(--md-surface-container-high)', border: 'none', cursor: 'pointer' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 5, background: 'var(--md-surface-container-high)', border: '1px solid var(--md-outline-variant)', cursor: 'pointer' }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--md-on-surface)' }}>{s.symbol}</span>
                   <span style={{ fontSize: 11, color: 'var(--md-outline)' }}>{s._count.id}</span>
                 </button>
@@ -121,7 +119,7 @@ export default function LogsPage() {
           {(['all', 'ta', 'valuation', 'report'] as Filter[]).map(f => (
             <button key={f} onClick={() => setFilter(f)} className="md-ripple"
               style={{
-                padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 13,
+                padding: '5px 12px', borderRadius: 5, border: 'none', cursor: 'pointer', fontSize: 13,
                 background: filter === f ? 'var(--md-primary)' : 'var(--md-surface-container)',
                 color: filter === f ? 'var(--md-on-primary)' : 'var(--md-on-surface-variant)',
                 fontWeight: filter === f ? 600 : 400,
@@ -132,7 +130,7 @@ export default function LogsPage() {
         </div>
 
         {/* Log table */}
-        <div style={{ background: 'var(--md-surface-container)', borderRadius: 20, overflow: 'hidden' }}>
+        <div style={{ background: 'var(--md-surface-container)', border: '1px solid var(--md-outline-variant)', borderRadius: 10, overflow: 'hidden' }}>
           {loading ? (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--md-outline)' }}>Loading…</div>
           ) : logs.length === 0 ? (

@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Target, CheckCircle2, XCircle, AlertCircle, TrendingUp, Zap } from 'lucide-react'
+import { MenuButton } from '@/components/Sidebar'
 import { evaluateSniper } from '@/lib/sniper'
-import MobileNav from '@/components/MobileNav'
 import type { FullTickerData } from '@/types/market'
 import type { SniperSignal, SniperGrade } from '@/types/sniper'
 import { formatNumber } from '@/lib/utils'
@@ -54,31 +54,26 @@ export default function SniperPage() {
   const gc = signal ? gradeConfig[signal.grade] : null
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 80 }}
-      className="md:pb-0">
-      {/* Header */}
-      <header style={{
+    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 0 }}
+     >
+      {/* Header — mobile only */}
+      <header className="md:hidden" style={{
         position: 'sticky', top: 0, zIndex: 30,
-        height: 64, padding: '0 16px 0 4px',
+        height: 52, padding: '0 16px 0 4px',
         display: 'flex', alignItems: 'center', gap: 8,
         background: 'var(--md-surface)',
         borderBottom: '1px solid var(--md-outline-variant)',
       }}>
-        <button onClick={() => router.push(`/ticker/${symbol}`)} className="md-ripple"
-          style={{ padding: 12, borderRadius: 50, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-          <ArrowLeft size={22} color="var(--md-on-surface-variant)" />
-        </button>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 18, fontWeight: 500, color: 'var(--md-on-surface)', margin: 0 }}>
-            {symbol} — Sniper Strategy
-          </h1>
-          {data && (
-            <p style={{ fontSize: 12, color: 'var(--md-on-surface-variant)', margin: 0 }}>
-              ${formatNumber(data.ticker.currentPrice)} · {data.ticker.name}
-            </p>
-          )}
-        </div>
-        <Target size={20} color="var(--md-on-surface-variant)" />
+        <MenuButton />
+        <Target size={15} color="var(--md-primary)" />
+        <h1 style={{ fontSize: 16, fontWeight: 600, color: 'var(--md-on-surface)', margin: 0, flex: 1 }}>
+          {symbol} — Sniper
+        </h1>
+        {data && (
+          <span style={{ fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
+            ${formatNumber(data.ticker.currentPrice)}
+          </span>
+        )}
       </header>
 
       <main style={{ maxWidth: 800, margin: '0 auto', padding: '20px 16px 60px' }}>
@@ -291,7 +286,6 @@ export default function SniperPage() {
           </>
         )}
       </main>
-      <MobileNav active="sniper" symbol={symbol} />
     </div>
   )
 }

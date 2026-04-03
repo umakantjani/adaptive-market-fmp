@@ -6,10 +6,10 @@ import {
   ArrowLeft, Calculator, Sparkles, RefreshCw, Square,
   Copy, ChevronDown, ChevronUp, BookOpen, Save, CheckCircle,
 } from 'lucide-react'
+import { MenuButton } from '@/components/Sidebar'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { buildDefaultInputs, calculateDCF } from '@/lib/dcf'
-import MobileNav from '@/components/MobileNav'
 import type { FundamentalData, DCFInputs, DCFResults } from '@/types/valuation'
 import type { TAResult, TickerInfo } from '@/types/market'
 import { formatNumber } from '@/lib/utils'
@@ -228,33 +228,24 @@ export default function ValuationPage() {
     : ''
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 80 }}
-      className="md:pb-0">
-      {/* Top App Bar */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 30, height: 64,
+    <div style={{ minHeight: '100vh', background: 'var(--md-background)', paddingBottom: 0 }}
+     >
+      {/* Top App Bar — mobile only */}
+      <header className="md:hidden" style={{
+        position: 'sticky', top: 0, zIndex: 30, height: 52,
         padding: '0 16px 0 4px',
         display: 'flex', alignItems: 'center', gap: 8,
         background: 'var(--md-surface)',
         borderBottom: '1px solid var(--md-outline-variant)',
       }}>
-        <button onClick={() => router.back()} className="md-ripple"
-          style={{ padding: 12, borderRadius: 50, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-          <ArrowLeft size={22} color="var(--md-on-surface-variant)" />
-        </button>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 18, fontWeight: 500, color: 'var(--md-on-surface)', margin: 0 }}>
-            DCF Valuation
-          </h1>
-          {fundamentals && (
-            <p style={{ fontSize: 12, color: 'var(--md-on-surface-variant)', margin: 0 }}>
-              {symbol} · {fundamentals.name}
-            </p>
-          )}
-        </div>
+        <MenuButton />
+        <Calculator size={15} color="var(--md-primary)" />
+        <h1 style={{ fontSize: 16, fontWeight: 600, color: 'var(--md-on-surface)', margin: 0, flex: 1 }}>
+          {symbol} — DCF Valuation
+        </h1>
         {results && (
           <span style={{
-            fontSize: 12, fontWeight: 600, padding: '5px 12px', borderRadius: 16,
+            fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 10,
             color: mosColor, background: `${mosColor}20`, flexShrink: 0,
           }}>{mosLabel}</span>
         )}
@@ -590,7 +581,6 @@ export default function ValuationPage() {
           `}</style>
         </main>
       )}
-      <MobileNav active="valuation" symbol={symbol} />
     </div>
   )
 }

@@ -13,33 +13,10 @@ export async function GET(
     const fundamentals = await fetchFundamentals(sym)
 
     // Upsert Ticker, then save FundamentalSnapshot
-    const ticker = await prisma.ticker.upsert({
+    await prisma.ticker.upsert({
       where: { symbol: sym },
       update: { name: fundamentals.name, sector: fundamentals.sector },
       create: { symbol: sym, name: fundamentals.name, sector: fundamentals.sector },
-    })
-
-    await prisma.fundamentalSnapshot.create({
-      data: {
-        tickerId: ticker.id,
-        revenue: fundamentals.revenue,
-        ebit: fundamentals.ebit,
-        interestExpense: fundamentals.interestExpense,
-        netIncome: fundamentals.netIncome,
-        taxRate: fundamentals.effectiveTaxRate,
-        bookEquity: fundamentals.bookEquity,
-        bookDebt: fundamentals.bookDebt,
-        cash: fundamentals.cash,
-        nonOperatingAssets: fundamentals.nonOperatingAssets,
-        minorityInterests: fundamentals.minorityInterests,
-        sharesOutstanding: fundamentals.sharesOutstanding,
-        beta: fundamentals.beta,
-        revenueGrowthYoy: fundamentals.revenueGrowthYoy,
-        operatingMargin: fundamentals.operatingMargin,
-        sector: fundamentals.sector,
-        industry: fundamentals.industry,
-        rawJson: JSON.stringify(fundamentals),
-      },
     })
 
     // Log the valuation search

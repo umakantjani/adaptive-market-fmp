@@ -36,15 +36,15 @@ export async function fetchFundamentals(symbol: string): Promise<FundamentalData
   const cash = num(balance?.cashAndCashEquivalents) / M
   const totalDebt = num(balance?.totalDebt) / M
   const bookEquity = num(balance?.totalStockholdersEquity) / M
-    || (num(profile?.mktCap) / M * 0.3) // fallback: 30% of mktCap estimate
+    || (num(profile?.marketCap) / M * 0.3) // fallback: 30% of marketCap estimate
   const minorityInterests = num(balance?.minorityInterest) / M
   const nonOperatingAssets =
     (num(balance?.shortTermInvestments) + num(balance?.longTermInvestments)) / M
 
   // ── Profile ───────────────────────────────────────────────────────────────
   const beta = num(profile?.beta) || 1.0
-  // FMP sharesOutstanding is in absolute shares (e.g. 15,500,000,000 for AAPL)
-  const sharesOutstanding = num(profile?.sharesOutstanding) / M
+  // Use diluted weighted average shares from income statement (absolute shares)
+  const sharesOutstanding = num(income?.weightedAverageShsOutDil) / M
   const sector = profile?.sector ?? 'Unknown'
   const industry = profile?.industry ?? 'Unknown'
   const name = profile?.companyName ?? quote?.name ?? symbol

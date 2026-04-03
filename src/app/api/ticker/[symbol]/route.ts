@@ -27,15 +27,6 @@ export async function GET(
       create: { symbol, name: quote.name, exchange: quote.exchange },
     })
 
-    // Store OHLCV snapshot (keep last 10)
-    await prisma.oHLCVSnapshot.create({
-      data: {
-        tickerId: ticker.id,
-        period: '1d',
-        barsJson: JSON.stringify(ohlcv.slice(-50)),
-      },
-    })
-
     // Store TA snapshot
     await prisma.tASnapshot.create({
       data: {
