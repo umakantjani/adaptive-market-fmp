@@ -64,6 +64,17 @@ interface FMPQuote {
   exchange: string
 }
 
+// Batch quote — accepts comma-separated symbols, returns partial TickerInfo
+export async function fetchBatchQuotes(
+  symbols: string[]
+): Promise<Array<{ symbol: string; name: string; marketCap: number }>> {
+  if (symbols.length === 0) return []
+  const data = await fmpGet<FMPQuote[]>('/quote', { symbol: symbols.join(',') })
+  return (data ?? [])
+    .filter(q => q.symbol && q.marketCap)
+    .map(q => ({ symbol: q.symbol, name: q.name ?? q.symbol, marketCap: q.marketCap }))
+}
+
 export async function fetchQuote(symbol: string): Promise<TickerInfo> {
   const [data] = await fmpGet<FMPQuote[]>('/quote', { symbol })
   if (!data) throw new Error(`No quote found for ${symbol}`)

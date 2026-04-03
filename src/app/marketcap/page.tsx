@@ -1,8 +1,9 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import SearchBar from '@/components/SearchBar'
-import { CircleDollarSign } from 'lucide-react'
+import { CircleDollarSign, TrendingUp } from 'lucide-react'
 import { MenuButton } from '@/components/Sidebar'
 
 export default function MarketCapIndexPage() {
@@ -57,6 +58,33 @@ export default function MarketCapIndexPage() {
             </button>
           ))}
         </div>
+
+        {/* S&P 500 Quarterly card */}
+        <div style={{ marginTop: 40 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--md-outline)', marginBottom: 10 }}>
+            Index Analytics
+          </div>
+          <Link href="/marketcap/sp500-quarterly" style={{ textDecoration: 'none' }}>
+            <div className="md-ripple" style={{
+              display: 'flex', alignItems: 'center', gap: 14,
+              padding: '16px 20px', borderRadius: 14,
+              background: 'var(--md-surface-container)',
+              border: '1px solid var(--md-outline-variant)',
+              cursor: 'pointer',
+            }}>
+              <TrendingUp size={28} color="var(--md-primary)" style={{ flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--md-on-surface)', marginBottom: 3 }}>
+                  S&amp;P 500 Quarterly
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--md-on-surface-variant)' }}>
+                  Top 10 components by market cap · heatmap + bar chart · 5Q to All
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+
       </main>
     </div>
   )
