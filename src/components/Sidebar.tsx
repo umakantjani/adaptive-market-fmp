@@ -113,11 +113,12 @@ export default function Sidebar({ symbol }: Props) {
   ] : []
 
   const bottomNav: NavItem[] = [
-    { href: '/marketcap',             label: 'Market Cap',   icon: CircleDollarSign, exact: false },
-    { href: '/marketcap/sp500-quarterly', label: 'S&P 500 Q',  icon: TrendingUp,       exact: false },
-    { href: '/scanner',               label: 'Scanner',      icon: ScanLine,          exact: false },
-    { href: '/rituals',               label: 'Rituals',      icon: BookOpen,          exact: false },
-    { href: '/logs',                  label: 'Logs',         icon: ScrollText,        exact: false },
+    { href: '/marketcap',                   label: 'Market Cap',   icon: CircleDollarSign, exact: true  },
+    { href: '/marketcap/contribution',      label: 'Contribution', icon: TrendingUp,       exact: false },
+    { href: '/marketcap/sp500-quarterly',   label: 'S&P 500 Q',   icon: BarChart2,        exact: false },
+    { href: '/scanner',                     label: 'Scanner',      icon: ScanLine,          exact: false },
+    { href: '/rituals',                     label: 'Rituals',      icon: BookOpen,          exact: false },
+    { href: '/logs',                        label: 'Logs',         icon: ScrollText,        exact: false },
   ]
 
   // On mobile, always show expanded (no collapse on small screens)
