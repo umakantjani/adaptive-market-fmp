@@ -219,6 +219,29 @@ export async function fetchFullOHLCV(symbol: string): Promise<OHLCVBar[]> {
   return allBars.reverse() // oldest-first
 }
 
+// ── Corporate Events ─────────────────────────────────────────────────────────
+export interface FMPSplit {
+  date: string; numerator: number; denominator: number; symbol: string
+}
+
+export interface FMPDividend {
+  date: string; dividend: number; symbol: string
+  recordDate?: string; paymentDate?: string; declarationDate?: string
+}
+
+export async function fetchStockSplits(symbol: string): Promise<FMPSplit[]> {
+  const data = await fmpGet<FMPSplit[] | { historical: FMPSplit[] }>('/stock-split-events', { symbol })
+  // Stable API returns a flat array or may wrap in historical
+  if (Array.isArray(data)) return data
+  return (data as { historical: FMPSplit[] }).historical ?? []
+}
+
+export async function fetchDividends(symbol: string): Promise<FMPDividend[]> {
+  const data = await fmpGet<FMPDividend[] | { historical: FMPDividend[] }>('/dividends', { symbol })
+  if (Array.isArray(data)) return data
+  return (data as { historical: FMPDividend[] }).historical ?? []
+}
+
 // ── S&P 500 Constituents ──────────────────────────────────────────────────────
 export interface FMPSp500Constituent {
   symbol: string; name: string; sector?: string; subSector?: string

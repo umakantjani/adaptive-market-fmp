@@ -7,11 +7,19 @@ import {
 
 export interface McapPoint { date: string; marketCap: number }
 
+export interface EventPoint {
+  date: string
+  type: 'split' | 'dividend'
+  label: string
+  value: number | null
+}
+
 interface Props {
   data: McapPoint[]
   sp500Data: McapPoint[]
   showSp500: boolean
   logScale: boolean
+  events?: EventPoint[]
 }
 
 // Milestone thresholds in USD
@@ -57,12 +65,22 @@ const tooltipStyle = {
   fontSize: 12,
 }
 
-export default function MarketCapChart({ data, sp500Data, showSp500, logScale }: Props) {
+// Find the nearest date string in a dataset to a given target date
+function nearestDate(dates: string[], target: string): string | null {
+  if (dates.length === 0) return null
+  return dates.reduce((best, d) => Math.abs(d.localeCompare(target)) < Math.abs(best.localeCompare(target)) ? d : best)
+}
+
+export default function MarketCapChart({ data, sp500Data, showSp500, logScale, events = [] }: Props) {
   if (data.length === 0) return null
+
+  // Only render splits as vertical markers (dividends are too frequent)
+  const splits = events.filter(e => e.type === 'split')
 
   if (showSp500) {
     // Indexed comparison mode
     const { combined } = indexSeries(data, sp500Data)
+    const dates = combined.map(d => d.date)
 
     return (
       <div className="w-full h-[360px] md:h-[460px]">
@@ -102,8 +120,17 @@ export default function MarketCapChart({ data, sp500Data, showSp500, logScale }:
               formatter={v => v === 'ticker' ? 'Ticker' : 'S&P 500 Aggregate'}
               wrapperStyle={{ fontSize: 12, color: '#CAC4D0' }}
             />
-            <Area type="monotone" dataKey="ticker" stroke="#7CB9F4" strokeWidth={2} fill="url(#tickerGrad)" dot={false} connectNulls />
-            <Area type="monotone" dataKey="sp500"  stroke="#69F0AE" strokeWidth={1.5} fill="url(#sp500Grad)" dot={false} strokeDasharray="5 3" connectNulls />
+            {splits.map(ev => {
+              const x = nearestDate(dates, ev.date)
+              if (!x) return null
+              return (
+                <ReferenceLine key={`split-${ev.date}`} x={x} stroke="#FF9800" strokeWidth={1.5}
+                  strokeDasharray="4 2" strokeOpacity={0.8}
+                  label={{ value: `✂ ${ev.label}`, position: 'top', fontSize: 9, fill: '#FF9800' }} />
+              )
+            })}
+            <Area type="monotone" dataKey="ticker" stroke="#7CB9F4" strokeWidth={2} fill="url(#tickerGrad)" dot={false} connectNulls isAnimationActive={false} />
+            <Area type="monotone" dataKey="sp500"  stroke="#69F0AE" strokeWidth={1.5} fill="url(#sp500Grad)" dot={false} strokeDasharray="5 3" connectNulls isAnimationActive={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -114,6 +141,7 @@ export default function MarketCapChart({ data, sp500Data, showSp500, logScale }:
   const min = Math.min(...data.map(d => d.marketCap))
   const max = Math.max(...data.map(d => d.marketCap))
   const visibleMilestones = MILESTONES.filter(m => m.value > min * 0.5 && m.value <= max * 1.05)
+  const dates = data.map(d => d.date)
 
   return (
     <div className="w-full h-[360px] md:h-[460px]">
@@ -155,6 +183,15 @@ export default function MarketCapChart({ data, sp500Data, showSp500, logScale }:
               label={{ value: m.label, position: 'insideTopRight', fontSize: 10, fill: '#FFD740', opacity: 0.8 }}
             />
           ))}
+          {splits.map(ev => {
+            const x = nearestDate(dates, ev.date)
+            if (!x) return null
+            return (
+              <ReferenceLine key={`split-${ev.date}`} x={x} stroke="#FF9800" strokeWidth={1.5}
+                strokeDasharray="4 2" strokeOpacity={0.8}
+                label={{ value: `✂ ${ev.label}`, position: 'top', fontSize: 9, fill: '#FF9800' }} />
+            )
+          })}
           <Area
             type="monotone"
             dataKey="marketCap"
@@ -163,6 +200,7 @@ export default function MarketCapChart({ data, sp500Data, showSp500, logScale }:
             fill="url(#mcapGrad)"
             dot={false}
             name="Market Cap"
+            isAnimationActive={false}
           />
         </AreaChart>
       </ResponsiveContainer>

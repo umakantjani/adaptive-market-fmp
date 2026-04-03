@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import {
   TrendingUp, Home, ScrollText, BarChart2,
   Sparkles, Calculator, Target, BookOpen, ScanLine,
-  ChevronLeft, ChevronRight, LogOut, Menu, X,
+  ChevronLeft, ChevronRight, LogOut, Menu, X, CircleDollarSign,
 } from 'lucide-react'
 
 const COLLAPSED_W = 56
@@ -106,15 +106,17 @@ export default function Sidebar({ symbol }: Props) {
   ]
 
   const tickerNav: NavItem[] = tickerBase ? [
-    { href: `${tickerBase}/report`,    label: 'AI Report', icon: Sparkles,   exact: false },
-    { href: `${tickerBase}/valuation`, label: 'Valuation', icon: Calculator, exact: false },
-    { href: `${tickerBase}/sniper`,    label: 'Sniper',    icon: Target,     exact: false },
+    { href: `${tickerBase}/report`,    label: 'AI Report',  icon: Sparkles,           exact: false },
+    { href: `${tickerBase}/valuation`, label: 'Valuation',  icon: Calculator,         exact: false },
+    { href: `${tickerBase}/sniper`,    label: 'Sniper',     icon: Target,             exact: false },
+    { href: `${tickerBase}/marketcap`, label: 'Market Cap', icon: CircleDollarSign,   exact: false },
   ] : []
 
   const bottomNav: NavItem[] = [
-    { href: '/scanner', label: 'Scanner', icon: ScanLine,   exact: false },
-    { href: '/rituals', label: 'Rituals', icon: BookOpen,   exact: false },
-    { href: '/logs',    label: 'Logs',    icon: ScrollText, exact: false },
+    { href: '/marketcap', label: 'Market Cap', icon: CircleDollarSign, exact: false },
+    { href: '/scanner',   label: 'Scanner',    icon: ScanLine,          exact: false },
+    { href: '/rituals',   label: 'Rituals',    icon: BookOpen,          exact: false },
+    { href: '/logs',      label: 'Logs',       icon: ScrollText,        exact: false },
   ]
 
   // On mobile, always show expanded (no collapse on small screens)

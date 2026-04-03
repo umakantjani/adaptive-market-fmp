@@ -272,6 +272,20 @@ model SearchLog {
   @@index([searchedAt])
 }
 
+// ── Corporate events (splits, dividends) ─────────────────────────────────────
+
+model CorporateEvent {
+  id     Int    @id @default(autoincrement())
+  symbol String
+  date   String // YYYY-MM-DD
+  type   String // 'split' | 'dividend'
+  label  String // e.g. "3:1" for split, "$0.25" for dividend
+  value  Float? // split ratio (numerator/denominator) or dividend amount
+
+  @@unique([symbol, date, type])
+  @@index([symbol, date])
+}
+
 // ── Scanner ───────────────────────────────────────────────────────────────────
 
 model WatchlistTicker {

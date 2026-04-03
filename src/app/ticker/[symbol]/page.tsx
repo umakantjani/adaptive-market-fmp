@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Bookmark, TrendingUp, TrendingDown, Sparkles, Calculator, Target, ChartArea } from 'lucide-react'
 import { MenuButton } from '@/components/Sidebar'
 import IndicatorGrid from '@/components/IndicatorGrid'
-import PriceChart from '@/components/charts/PriceChart'
+import PriceChart, { type ChartEvent } from '@/components/charts/PriceChart'
 import RSIMACDChart from '@/components/charts/RSIMACDChart'
 import StochADXChart from '@/components/charts/StochADXChart'
 import OBVChart from '@/components/charts/OBVChart'
@@ -37,6 +37,7 @@ export default function TickerPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [chartTab, setChartTab] = useState<ChartTab>('price')
+  const [events, setEvents] = useState<ChartEvent[]>([])
 
   useEffect(() => {
     setLoading(true); setError(''); setData(null)
@@ -45,6 +46,11 @@ export default function TickerPage() {
       .then(d => { if (d.error) setError(d.error); else setData(d) })
       .catch(() => setError('Network error. Please try again.'))
       .finally(() => setLoading(false))
+    // Fetch events in parallel (non-blocking — ignore errors)
+    fetch(`/api/events/${symbol}`)
+      .then(r => r.json())
+      .then(d => setEvents(d.data ?? []))
+      .catch(() => {})
     try {
       const stored = JSON.parse(localStorage.getItem('am_recent_tickers') || '[]') as string[]
       const updated = [symbol, ...stored.filter(s => s !== symbol)].slice(0, 10)
@@ -243,7 +249,7 @@ export default function TickerPage() {
                   ))}
                 </div>
                 <div style={{ padding: '8px 12px 12px' }}>
-                  {chartTab === 'price'    && <PriceChart ta={data.ta} currentPrice={data.ticker.currentPrice} />}
+                  {chartTab === 'price'    && <PriceChart ta={data.ta} currentPrice={data.ticker.currentPrice} events={events} />}
                   {chartTab === 'rsimacd'  && <RSIMACDChart ta={data.ta} />}
                   {chartTab === 'stochadx' && <StochADXChart ta={data.ta} />}
                   {chartTab === 'obv'      && <OBVChart ta={data.ta} />}

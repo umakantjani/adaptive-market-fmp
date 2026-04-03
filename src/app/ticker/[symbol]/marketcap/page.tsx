@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Download, Sparkles, TrendingUp, BarChart2, RefreshCw } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import type { McapPoint } from '@/components/charts/MarketCapChart'
+import type { McapPoint, EventPoint } from '@/components/charts/MarketCapChart'
 
 const MarketCapChart = dynamic(() => import('@/components/charts/MarketCapChart'), { ssr: false })
 
@@ -37,13 +37,35 @@ function cagrColor(s: string): string {
 
 type Range = '1Y' | '3Y' | '5Y' | '10Y' | 'MAX'
 
+// Max data points to send to Recharts per range
+const RANGE_MAX_PTS: Record<Range, number> = {
+  '1Y': 260,   // daily — ~252 trading days, keep all
+  '3Y': 180,   // ~weekly
+  '5Y': 260,   // ~weekly
+  '10Y': 130,  // ~monthly
+  'MAX': 400,  // sampled
+}
+
+function downsample(data: McapPoint[], maxPts: number): McapPoint[] {
+  if (data.length <= maxPts) return data
+  const step = Math.ceil(data.length / maxPts)
+  const result: McapPoint[] = []
+  for (let i = 0; i < data.length; i += step) result.push(data[i])
+  // Always include the last point
+  if (result[result.length - 1] !== data[data.length - 1]) result.push(data[data.length - 1])
+  return result
+}
+
 function filterByRange(data: McapPoint[], range: Range): McapPoint[] {
-  if (range === 'MAX') return data
-  const years = { '1Y': 1, '3Y': 3, '5Y': 5, '10Y': 10 }[range]
-  const cutoff = new Date()
-  cutoff.setFullYear(cutoff.getFullYear() - years)
-  const cutStr = cutoff.toISOString().slice(0, 10)
-  return data.filter(d => d.date >= cutStr)
+  let filtered = data
+  if (range !== 'MAX') {
+    const years = { '1Y': 1, '3Y': 3, '5Y': 5, '10Y': 10 }[range]
+    const cutoff = new Date()
+    cutoff.setFullYear(cutoff.getFullYear() - years)
+    const cutStr = cutoff.toISOString().slice(0, 10)
+    filtered = data.filter(d => d.date >= cutStr)
+  }
+  return downsample(filtered, RANGE_MAX_PTS[range])
 }
 
 function downloadCSV(symbol: string, data: McapPoint[]) {
@@ -71,6 +93,7 @@ export default function MarketCapPage() {
 
   const [allData, setAllData]       = useState<McapPoint[]>([])
   const [sp500Data, setSp500Data]   = useState<McapPoint[]>([])
+  const [events, setEvents]         = useState<EventPoint[]>([])
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState('')
   const [range, setRange]           = useState<Range>('MAX')
@@ -81,15 +104,17 @@ export default function MarketCapPage() {
   const [summaryLoading, setSummaryLoading] = useState(false)
   const summaryRef = useRef<AbortController | null>(null)
 
-  // Fetch market cap history
+  // Fetch market cap history and events in parallel
   useEffect(() => {
     setLoading(true)
-    fetch(`/api/marketcap/${symbol}`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.error) setError(d.error)
-        else setAllData(d.data ?? [])
-      })
+    Promise.all([
+      fetch(`/api/marketcap/${symbol}`).then(r => r.json()),
+      fetch(`/api/events/${symbol}`).then(r => r.json()).catch(() => ({ data: [] })),
+    ]).then(([mcap, evts]) => {
+      if (mcap.error) setError(mcap.error)
+      else setAllData(mcap.data ?? [])
+      setEvents(evts.data ?? [])
+    })
       .catch(() => setError('Failed to load market cap data'))
       .finally(() => setLoading(false))
   }, [symbol])
@@ -130,6 +155,9 @@ export default function MarketCapPage() {
   }, [symbol])
 
   const filtered = filterByRange(allData, range)
+  const filteredEvents = filtered.length > 0
+    ? events.filter(e => e.date >= filtered[0].date && e.date <= filtered[filtered.length - 1].date)
+    : []
   const current  = filtered[filtered.length - 1]
   const start    = filtered[0]
   const ath      = allData.length > 0 ? allData.reduce((m, d) => d.marketCap > m.marketCap ? d : m, allData[0]) : null
@@ -284,6 +312,7 @@ export default function MarketCapPage() {
               sp500Data={sp500Data}
               showSp500={showSp500}
               logScale={logScale && !showSp500}
+              events={filteredEvents}
             />
           )}
 
