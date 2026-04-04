@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import SearchBar from '@/components/SearchBar'
 import { TrendingUp } from 'lucide-react'
 import { UserButton } from '@clerk/nextjs'
@@ -107,9 +108,10 @@ export default function HomePage() {
         `}</style>
         <div className="ticker-grid">
           {displayList.map(({ symbol, name }) => (
-            <button
+            <Link
               key={symbol}
-              onClick={() => router.push(`/ticker/${symbol}`)}
+              href={`/ticker/${symbol}`}
+              prefetch={true}
               className="md-ripple"
               style={{
                 textAlign: 'left',
@@ -119,13 +121,14 @@ export default function HomePage() {
                 border: '1px solid var(--md-outline-variant)',
                 cursor: 'pointer',
                 transition: 'border-color 120ms',
+                textDecoration: 'none',
               }}>
               <div style={{
                 fontSize: 13, fontWeight: 700, color: 'var(--md-on-surface)',
                 fontVariantNumeric: 'tabular-nums', letterSpacing: '0.03em', marginBottom: 2,
               }}>{symbol}</div>
               {name && <div style={{ fontSize: 11, color: 'var(--md-on-surface-variant)', lineHeight: 1.3 }}>{name}</div>}
-            </button>
+            </Link>
           ))}
         </div>
       </main>

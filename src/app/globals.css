@@ -111,31 +111,33 @@
 
 /* ── Color Tokens ─────────────────────────────────────────────────────────── */
 :root {
-  /* Backgrounds — deep terminal blacks */
-  --md-background:                #0C0C11;
-  --md-surface:                   #111118;
-  --md-surface-container-low:     #14141D;
-  --md-surface-container:         #1A1A25;
-  --md-surface-container-high:    #20202E;
-  --md-surface-container-highest: #272738;
+  /* Backgrounds — deep midnight blue / slate */
+  --md-background:                #030712;
+  --md-surface:                   #0B1120;
+  --md-surface-container-low:     #111827;
+  --md-surface-container:         #1F2937;
+  --md-surface-container-high:    #374151;
+  --md-surface-container-highest: #4B5563;
 
-  /* Primary accent — cool terminal blue */
-  --md-primary:                   #4DBBFF;
-  --md-on-primary:                #001E30;
-  --md-primary-container:         #003452;
-  --md-on-primary-container:      #B8E4FF;
+  /* Primary accent — glowing serene blue */
+  --md-primary:                   #38BDF8;
+  --md-on-primary:                #0C4A6E;
+  --md-primary-container:         #0284C7;
+  --md-on-primary-container:      #E0F2FE;
 
   /* Text */
-  --md-on-background:             #DCDCE8;
-  --md-on-surface:                #DCDCE8;
-  --md-on-surface-variant:        #787896;
-  --md-outline:                   #3A3A52;
-  --md-outline-variant:           rgba(58,58,82,0.55);
+  --md-on-background:             #F3F4F6;
+  --md-on-surface:                #F3F4F6;
+  --md-on-surface-variant:        #9CA3AF;
+  --md-outline:                   #4B5563;
+  --md-outline-variant:           rgba(75,85,99,0.55);
 
-  /* Signal colors */
-  --md-buy:    #00E676;
-  --md-sell:   #FF4D6A;
-  --md-neutral: #FFB300;
+  /* Signal colors 
+     Buy: Pantone 15-0343 Greenery / Poison Green inspired
+     Sell: Pantone 16-1546 Living Coral inspired */
+  --md-buy:     #42D697;
+  --md-sell:    #FF6F61;
+  --md-neutral: #FECA57;
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
